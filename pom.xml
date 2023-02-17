@@ -80,11 +80,18 @@
       <artifactId>vertx-jdbc-client</artifactId>
       <version>4.3.8</version>
     </dependency>
+
     <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
     <version>8.0.32</version>
   </dependency>
+
+    <dependency>
+      <groupId>io.github.cdimascio</groupId>
+      <artifactId>java-dotenv</artifactId>
+      <version>5.2.2</version>
+    </dependency>
   </dependencies>
 
   <build>

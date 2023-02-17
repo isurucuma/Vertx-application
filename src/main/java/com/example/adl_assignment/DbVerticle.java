@@ -1,5 +1,6 @@
 package com.example.adl_assignment;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.eventbus.EventBus;
@@ -14,18 +15,21 @@ import io.vertx.sqlclient.Tuple;
  */
 public class DbVerticle extends AbstractVerticle {
 
+  private Dotenv dotenv;
+
   private JDBCPool pool;
 
   public void start(Promise<Void> startPromise) {
+    dotenv = Dotenv.configure().load();
     System.out.println("DBVerticle Deployed...");
     EventBus eventBus = vertx.eventBus();
 
     // configuring MYSQL client
     JsonObject config = new JsonObject()
-      .put("url", "jdbc:mysql://localhost:3306/studentDB")
-      .put("driver_class", "com.mysql.jdbc.Driver")
-      .put("user", "root")
-      .put("password", "root123");
+      .put("url", dotenv.get("MYSQL_URL"))
+      .put("driver_class", dotenv.get("MYSQL_DRIVER_CLASS"))
+      .put("user", dotenv.get("MYSQL_USER"))
+      .put("password", dotenv.get("MYSQL_PASSWORD"));
 
     pool = JDBCPool.pool(vertx, config);
 
