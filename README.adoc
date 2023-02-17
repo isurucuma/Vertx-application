@@ -1,32 +1,29 @@
-= Adl-assignment
+= Basic Vert.x Service
 
 image:https://img.shields.io/badge/vert.x-4.3.8-purple.svg[link="https://vertx.io"]
 
-This application was generated using http://start.vertx.io
+== Structure
+There are 3 verticles and one external service verticle
 
-== Building
+The 3 verticles are
 
-To launch your tests:
-```
-./mvnw clean test
-```
+* MainVerticle class
+* ServiceVerticle class
+* DbVerticle class
 
-To package your application:
-```
-./mvnw clean package
-```
+==== MainVerticle class
+corresponds to initiating the rest service and deploying the other two verticles
 
-To run your application:
-```
-./mvnw clean compile exec:java
-```
+==== ServiceVerticle class
+This will consume the events on the "poll.data" address and call the 3rd party rest service to get the data
 
-== Help
+==== DbVerticle class
+This corresponds to call the database upon receiving the event on the address "database.save" and save the data to the database
 
-* https://vertx.io/docs/[Vert.x Documentation]
-* https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
-* https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
-* https://discord.gg/6ry7aqPWXy[Vert.x Discord]
-* https://gitter.im/eclipse-vertx/vertx-users[Vert.x Gitter]
+This communicates with the MYSQL database and
+there should be a database and table with the fields mentioned as in the code.
+
+
+** #Make sure that the external.ExternalServer is running first#
 
 
