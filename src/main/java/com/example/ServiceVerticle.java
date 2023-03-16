@@ -1,4 +1,4 @@
-package com.example.adl_assignment;
+package com.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -6,6 +6,8 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
+
+import javax.sound.midi.SysexMessage;
 
 /**
  * ServiceVerticle class is used generate the serviceVerticle which listens on the address "poll.data"
@@ -21,7 +23,6 @@ public class ServiceVerticle extends AbstractVerticle {
     // consume on the "poll.data" address
     eventBus.consumer("poll.data", this::handlePollRequest);
 
-    System.out.println("ServiceVerticle Deployed...");
     startPromise.complete();
   }
 
@@ -32,9 +33,13 @@ public class ServiceVerticle extends AbstractVerticle {
     // Create Http client and get the data from the third party rest server
     WebClient webClient = WebClient.create(vertx);
 
+
     String path = String.format("/get/%s/", receivedBody.getString("id"));
 
-    webClient.get(8080, "localhost",  path).send()
+    int PORT = Integer.parseInt(System.getenv("SERVICE_PORT"));
+    String HOST = System.getenv("SERVICE_HOST");
+
+    webClient.get(PORT, HOST, path).send()
       .onSuccess(res -> {
       String body = res.bodyAsString();
 

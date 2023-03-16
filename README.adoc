@@ -3,7 +3,7 @@
 image:https://img.shields.io/badge/vert.x-4.3.8-purple.svg[link="https://vertx.io"]
 
 == Structure
-There are 3 verticles and one external service verticle
+There are 3 verticles and one adl_assignment_externel_service service verticle
 
 The 3 verticles are
 
@@ -24,6 +24,6 @@ This communicates with the MYSQL database and
 there should be a database and table with the fields mentioned as in the code.
 
 
-** #Make sure that the external.ExternalServer is running first#
+** #Make sure that the com.example.adl_assignment.externel_service.ExternalServer is running first#
 
 
