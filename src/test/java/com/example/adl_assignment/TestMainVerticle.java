@@ -1,5 +1,6 @@
 package com.example.adl_assignment;
 
+import com.example.MainVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;

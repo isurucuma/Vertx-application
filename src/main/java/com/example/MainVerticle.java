@@ -1,4 +1,4 @@
-package com.example.adl_assignment;
+package com.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -22,28 +22,52 @@ public class MainVerticle extends AbstractVerticle {
   private EventBus eventBus;
 
   public static void main(String[] args) {
-    Vertx vertx = Vertx.vertx();
-    vertx.deployVerticle(new MainVerticle());
+      Vertx vertx = Vertx.vertx();
+      vertx.deployVerticle(new MainVerticle());
+
   }
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
+
+    try {
+      if (System.getenv("SERVICE_HOST") == null || System.getenv("SERVICE_PORT") == null) {
+        throw new RuntimeException("SERVICE info not provided..");
+      }
+    }catch(Exception ex){
+      System.err.println(ex.getMessage());
+
+    }
+
     // deploy DbVerticle
-    vertx.deployVerticle(new DbVerticle());
+    vertx.deployVerticle(new DbVerticle()).onSuccess(s -> {
+      System.out.println("DB verticle Deployed...");
+    }).onFailure(err -> {
+      System.err.println(err.getMessage());
+    });
 
     // deploy ServiceVerticle
-    vertx.deployVerticle(new ServiceVerticle());
+    vertx.deployVerticle(new ServiceVerticle())
+      .onSuccess(s -> {
+        System.out.println("Service verticle deployed");
+      }).
+      onFailure(err -> {
+        System.err.println(err.getMessage());
+      });
 
     // create the http endpoint listen on the "localhost/request/{id}"
     httpServer = vertx.createHttpServer();
     eventBus = vertx.eventBus();
 
     Router router = Router.router(this.vertx);
+
+
     router.route(HttpMethod.GET, "/resource/:id/").handler(this::handleResourceRequest);
     httpServer.requestHandler(router).listen(5000, ar -> {
       if (ar.succeeded()) {
         startPromise.complete();
-        System.out.println("HTTP MainServer is listening on port 5000");
+        // customBean.incrementCustomAttribute();
+        System.out.println("HTTP MainServer is listening on port=5000 ");
       } else {
         startPromise.fail(ar.cause());
       }
@@ -58,13 +82,12 @@ public class MainVerticle extends AbstractVerticle {
     JsonObject jsonObject = new JsonObject();
     jsonObject.put("id", id);
 
-    try{
+    try {
       // send request to "poll.data" address
       eventBus.request("poll.data", jsonObject, ar -> {
         handlePollData(ar, rc);
       });
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       System.err.println(e.getMessage());
       rc.fail(400);
     }
@@ -72,7 +95,7 @@ public class MainVerticle extends AbstractVerticle {
 
   private void handlePollData(AsyncResult<Message<Object>> asyncResult, RoutingContext rc) {
 
-    try{
+    try {
       // take the data from the response
       if (asyncResult.succeeded()) {
         Message<Object> message = asyncResult.result();
@@ -90,8 +113,7 @@ public class MainVerticle extends AbstractVerticle {
         System.out.println("handle poll data failed...");
         rc.fail(400);
       }
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       System.err.println(e.getMessage());
       rc.fail(400);
     }
